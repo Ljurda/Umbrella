@@ -96,33 +96,60 @@
 
   /* easter egg */
   .monkey{
-    position:fixed;right:calc(14px + env(safe-area-inset-right));
-    bottom:calc(14px + env(safe-area-inset-bottom));
+    position:absolute;right:6px;bottom:6px;
     font-size:22px;line-height:1;background:none;border:0;padding:8px;cursor:pointer;
-    opacity:.22;transition:opacity .3s ease,transform .3s ease;
+    opacity:.22;transition:opacity .3s ease,transform .3s ease;z-index:4;
   }
   .monkey:hover{opacity:.55}
   .monkey:active{transform:scale(1.4) rotate(-12deg);opacity:1}
   .monkey.pop{animation:pop .5s ease}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.55) rotate(12deg)}100%{transform:scale(1)}}
 
-  /* ---- series link (bottom left, mirrors the monkey) ---- */
-  .series-link{
-    position:fixed;left:calc(18px + env(safe-area-inset-left));
-    bottom:calc(20px + env(safe-area-inset-bottom));
-    background:none;border:0;padding:6px 2px;cursor:pointer;
-    font-family:system-ui,sans-serif;font-size:11px;font-weight:500;
-    letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+  /* ---- home: 2x2 panel menu ---- */
+  .home{
+    position:fixed;inset:0;display:flex;flex-direction:column;
+    padding:calc(18px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
   }
-  .series-link:active{color:var(--accent)}
+  .home-head{display:flex;align-items:baseline;justify-content:center;gap:12px;padding:0 4px 14px}
+  .home-eyebrow{font-family:system-ui,sans-serif;font-size:10px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+  .home-title{font-style:italic;font-weight:500;font-size:clamp(22px,6.5vw,28px);line-height:1.1}
+  .tile-wrap{position:relative;display:flex;min-height:0}
+  .tile-wrap .tile{flex:1}
+  .grid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;width:100%;min-height:0}
+  .tile{
+    appearance:none;min-height:0;border:1px solid rgba(51,39,43,.13);border-radius:3px;
+    background:rgba(255,255,255,.38);color:var(--ink);cursor:pointer;padding:16px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    font-family:inherit;transition:background .25s ease,border-color .25s ease,transform .2s ease;
+  }
+  .tile:active{transform:scale(.98);border-color:var(--accent);background:rgba(255,255,255,.6)}
+  .tile svg{width:clamp(48px,16vw,72px);height:clamp(48px,16vw,72px);overflow:visible}
+  .tile .hp-small{fill:transparent;stroke:var(--accent);stroke-width:1.6}
+  .t-big{font-style:italic;font-weight:500;font-size:clamp(46px,16vw,72px);line-height:1;font-variant-numeric:lining-nums}
+  .t-label{font-family:system-ui,sans-serif;font-size:10px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+  .tile.soon{cursor:default;border-style:dashed;background:transparent}
+  .tile.soon .t-big{color:rgba(51,39,43,.22);font-style:normal;font-weight:400}
+  .tile.soon:active{transform:none;border-color:rgba(51,39,43,.13)}
 
-  /* ---- series view ---- */
-  .series{
-    position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  /* ---- full-screen sub views (love, days, series) ---- */
+  .view{
+    position:fixed;inset:0;z-index:5;overflow-y:auto;-webkit-overflow-scrolling:touch;
     background:linear-gradient(175deg,var(--paper) 0%,var(--paper2) 100%);
     padding:calc(28px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
-    text-align:left;z-index:5;
   }
+  .view-top{position:absolute;top:calc(28px + env(safe-area-inset-top));left:24px;right:24px;display:flex;justify-content:space-between;align-items:center}
+  .view.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+
+  /* ---- days ---- */
+  .days-num{font-style:italic;font-weight:500;font-size:clamp(84px,30vw,128px);line-height:.95;font-variant-numeric:lining-nums;color:var(--ink)}
+  .days-label{margin-top:16px;font-family:system-ui,sans-serif;font-size:11px;font-weight:500;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+  .days-since{margin-top:26px;font-style:italic;font-size:22px}
+  .days-split{margin-top:6px;font-size:19px;color:var(--muted);font-style:italic}
+  .days-next{margin-top:40px;padding-top:18px;border-top:1px solid rgba(51,39,43,.12);font-family:system-ui,sans-serif;font-size:12px;letter-spacing:.06em;color:var(--muted);min-width:220px}
+  .days-next b{color:var(--accent);font-weight:600}
+
+  /* ---- series view ---- */
+  .series{text-align:left}
   .series-inner{max-width:460px;margin:0 auto}
   .series-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
   .back{
@@ -198,8 +225,37 @@
     </div>
   </div>
 
-  <!-- Screen 2: the button -->
-  <main id="app" class="stage hidden">
+  <!-- Home: 2x2 panel menu -->
+  <main id="home" class="home hidden">
+    <div class="home-head">
+      <div class="home-title" id="homeTitle"></div>
+    </div>
+    <div class="grid">
+      <div class="tile-wrap">
+      <button class="tile" id="tLove" aria-label="Send a message">
+        <svg viewBox="0 0 32 29.6" aria-hidden="true"><path class="hp-small" d="M23.6,0c-2.9,0-5.4,1.6-7.6,4.3C13.8,1.6,11.3,0,8.4,0C3.8,0,0,3.8,0,8.4c0,7.7,7.7,12,16,21.2c8.3-9.2,16-13.5,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>
+        <span class="t-label">message</span>
+      </button>
+      <button class="monkey hidden" id="monkey" aria-label="send a monkey">🐵</button>
+      </div>
+      <button class="tile" id="tDays" aria-label="Days together">
+        <span class="t-big" id="tDaysNum">–</span>
+        <span class="t-label">days</span>
+      </button>
+      <button class="tile" id="tSeries" aria-label="Our series">
+        <span class="t-big" id="tSeriesNum">–</span>
+        <span class="t-label">series</span>
+      </button>
+      <div class="tile soon" aria-hidden="true">
+        <span class="t-big">+</span>
+        <span class="t-label">soon</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- View: send love -->
+  <section id="app" class="view center stage hidden" aria-label="Send love">
+    <div class="view-top"><button class="back" data-back>&larr; back</button><span></span></div>
     <button class="heart-btn" id="send" aria-label="Send I love you">
       <svg viewBox="0 0 32 29.6" aria-hidden="true">
         <path class="hp" d="M23.6,0c-2.9,0-5.4,1.6-7.6,4.3C13.8,1.6,11.3,0,8.4,0C3.8,0,0,3.8,0,8.4c0,7.7,7.7,12,16,21.2c8.3-9.2,16-13.5,16-21.2C32,3.8,28.2,0,23.6,0z"/>
@@ -208,16 +264,24 @@
     <div class="name" id="name"></div>
     <div class="hint" id="hint">tap the heart</div>
     <a class="sms" id="smsLink" href="#">send as a text instead</a>
-  </main>
+  </section>
 
-  <button class="monkey hidden" id="monkey" aria-label="send a monkey">🐵</button>
-  <button class="series-link hidden" id="seriesOpen">our series</button>
+  <!-- View: days together -->
+  <section id="days" class="view center hidden" aria-label="Days together">
+    <div class="view-top"><button class="back" data-back>&larr; back</button><span></span></div>
+    <div class="days-num" id="daysNum">–</div>
+    <div class="days-label">days together</div>
+    <div class="days-since">since 27 september 2025</div>
+    <div class="days-split" id="daysSplit"></div>
+    <div class="days-next" id="daysNext"></div>
+  </section>
+
 
   <!-- Screen 3: what we're watching -->
-  <section id="series" class="series hidden" aria-label="Our series">
+  <section id="series" class="view series hidden" aria-label="Our series">
     <div class="series-inner">
       <div class="series-top">
-        <button class="back" id="seriesClose">&larr; back</button>
+        <button class="back" data-back>&larr; back</button>
         <span class="status" id="syncStatus">loading…</span>
       </div>
       <h2>what we're watching</h2>
@@ -234,6 +298,7 @@
   const params = new URLSearchParams(location.search);
   const chooser = document.getElementById("chooser");
   const app = document.getElementById("app");
+  const home = document.getElementById("home");
   const enc = encodeURIComponent(MESSAGE);
 
   function start(me){
@@ -265,9 +330,64 @@
     };
 
     initSeries(me);
+    initDays();
+
+    // home menu
+    document.getElementById("homeTitle").textContent = `${PEOPLE.leon.name} & ${PEOPLE.her.name}`;
+    document.getElementById("tLove").onclick = () => {
+      btn.classList.remove("filled"); sending = false; hint.textContent = "tap the heart";
+      openView("app");
+    };
+    document.getElementById("tDays").onclick = () => { updateDays(); openView("days"); };
+    document.getElementById("tSeries").onclick = () => openView("series");
+    document.querySelectorAll("[data-back]").forEach(b => b.onclick = closeViews);
 
     chooser.classList.add("hidden");
-    app.classList.remove("hidden");
+    home.classList.remove("hidden");
+  }
+
+  function openView(id){
+    const v = document.getElementById(id);
+    v.classList.remove("hidden"); v.scrollTop = 0;
+    document.getElementById("monkey").classList.add("hidden");
+  }
+  function closeViews(){
+    document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+    document.getElementById("monkey").classList.remove("hidden");
+  }
+
+  /* ================= days together ================= */
+  const START = {y:2025, m:9, d:27};   // 27 Sept 2025
+  function todayParts(){ const t = new Date(); return {y:t.getFullYear(), m:t.getMonth()+1, d:t.getDate()}; }
+  const utc = p => Date.UTC(p.y, p.m-1, p.d);
+  function daysTogether(){ return Math.round((utc(todayParts()) - utc(START)) / 86400000); }
+  function splitYMD(){
+    const t = todayParts();
+    let y = t.y - START.y, m = t.m - START.m, d = t.d - START.d;
+    if(d < 0){ m -= 1; d += new Date(t.y, t.m - 1, 0).getDate(); }   // days in previous month
+    if(m < 0){ y -= 1; m += 12; }
+    const part = (n, w) => n ? `${n} ${w}${n === 1 ? "" : "s"}` : null;
+    return [part(y,"year"), part(m,"month"), part(d,"day")].filter(Boolean).join(", ") || "today";
+  }
+  function nextMilestone(n){
+    const steps = [100,200,300,365,400,500,600,700,730,800,900,1000];
+    let target = steps.find(s => s > n);
+    if(!target) target = Math.ceil((n+1)/500)*500;
+    const date = new Date(utc(START) + target*86400000);
+    const label = target % 365 === 0 ? `${target/365} year${target/365>1?"s":""}` : `${target} days`;
+    const when = date.toLocaleDateString("en-GB", {day:"numeric", month:"long", year:"numeric", timeZone:"UTC"});
+    return `next: <b>${label}</b> on ${when} \u00b7 in ${target - n} days`;
+  }
+  function updateDays(){
+    const n = daysTogether();
+    document.getElementById("tDaysNum").textContent = n;
+    document.getElementById("daysNum").textContent = n;
+    document.getElementById("daysSplit").textContent = splitYMD();
+    document.getElementById("daysNext").innerHTML = nextMilestone(n);
+  }
+  function initDays(){
+    updateDays();
+    document.addEventListener("visibilitychange", () => { if(!document.hidden) updateDays(); });
   }
 
   /* ================= series tracker (shared via Firebase) ================= */
@@ -279,11 +399,6 @@
 
   function initSeries(me){
     ME = me;
-    const openBtn = document.getElementById("seriesOpen");
-    const view = document.getElementById("series");
-    openBtn.classList.remove("hidden");
-    openBtn.onclick = () => { view.classList.remove("hidden"); view.scrollTop = 0; };
-    document.getElementById("seriesClose").onclick = () => view.classList.add("hidden");
     document.getElementById("addForm").onsubmit = addShow;
     listen();
   }
@@ -414,6 +529,7 @@
     box.innerHTML = "";
     const ids = Object.keys(shows).filter(id => shows[id] && shows[id].title)
       .sort((a,b) => (shows[b].created||0) - (shows[a].created||0));
+    document.getElementById("tSeriesNum").textContent = ids.length;
     if(!ids.length){ box.appendChild(el("div", "empty", "nothing yet — add your first series below")); return; }
     const other = ME === "leon" ? "her" : "leon";
     ids.forEach(id => {
